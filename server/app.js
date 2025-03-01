@@ -3,6 +3,8 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 3000;
 
+const cors = require('cors');
+app.use(cors());
 // Middleware to parse JSON requests
 app.use(express.json());
 
@@ -21,6 +23,10 @@ const extractKeywords = (query) => {
 
   return { age, gender, neighborhood, substance };
 };
+
+app.get("/", (req, res)=> {
+    res.json({message: "working"})
+})
 
 // Endpoint to process user query
 app.post('/process-query', async (req, res) => {
