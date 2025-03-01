@@ -9,20 +9,24 @@ app.use(cors());
 // Middleware to parse JSON requests
 app.use(express.json());
 
-// Simple function to extract keywords from the query using NLP
+// Custom function to extract age and gender using regex
 const extractKeywords = (query) => {
   const doc = nlp(query);
 
-  // Extract age using compromise (age might be treated as numbers)
-  const age = doc.match('#Age').text() || null;
+  // Extract age using a regex (looking for phrases like '25 years old' or '25 yrs old')
+  const agePattern = /(\d{1,3})\s?(?:years? old|yrs?)/i;
+  const ageMatch = query.match(agePattern);
+  const age = ageMatch ? ageMatch[1] : null;
 
-  // Extract gender (look for words like male/female)
-  const gender = doc.match('#Gender').text() || null;
+  // Extract gender using a regex (looking for 'male' or 'female')
+  const genderPattern = /\b(male|female)\b/i;
+  const genderMatch = query.match(genderPattern);
+  const gender = genderMatch ? genderMatch[1] : null;
 
-  // Extract neighborhood (for simplicity, we'll capture neighborhood names as nouns)
+  // Extract neighborhood using compromise (places like 'Winnipeg')
   const neighborhood = doc.match('#Place').text() || null;
 
-  // Extract substance
+  // Extract substance using a simple list and compromise to match words like 'alcohol', 'drug', 'nicotine'
   const substances = ['alcohol', 'drug', 'nicotine'];
   const substance = substances.find(sub => doc.has(sub)) || null;
 
@@ -41,21 +45,10 @@ app.post('/process-query', async (req, res) => {
     return res.status(400).json({ error: 'Query is required' });
   }
 
-  // Extract keywords from the user query using NLP
+  // Extract keywords from the user query using NLP and regex
   const { age, gender, neighborhood, substance } = extractKeywords(query);
 
   return res.status(200).json({ age, gender, neighborhood, substance });
-
-  // Example of how to send the data to another API (uncomment if needed)
-//   const apiPayload = { age, gender, neighborhood, substance };
-
-//   try {
-//     const response = await axios.post('https://mock-api-endpoint.com', apiPayload);
-//     return res.json({ responseData: response.data });
-//   } catch (error) {
-//     console.error('Error calling external API:', error);
-//     return res.status(500).json({ error: 'Internal Server Error' });
-//   }
 });
 
 // Start the server
