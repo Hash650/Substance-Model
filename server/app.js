@@ -39,19 +39,23 @@ app.post('/process-query', async (req, res) => {
   // Extract keywords from the user query
   const { age, gender, neighborhood, substance } = extractKeywords(query);
 
+
+
+  return res.status(200).json({age,gender,neighborhood,substance})
+
   // Prepare data to send to another API (replace URL with your real endpoint)
-  const apiPayload = { age, gender, neighborhood, substance };
+//   const apiPayload = { age, gender, neighborhood, substance };
 
-  try {
-    // Send the extracted data to another API (mocked here with axios)
-    const response = await axios.post('https://mock-api-endpoint.com', apiPayload);
+//   try {
+//     // Send the extracted data to another API (mocked here with axios)
+//     const response = await axios.post('https://mock-api-endpoint.com', apiPayload);
 
-    // Return the response from the external API to the frontend
-    return res.json({ responseData: response.data });
-  } catch (error) {
-    console.error('Error calling external API:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
+//     // Return the response from the external API to the frontend
+//     return res.json({ responseData: response.data });
+//   } catch (error) {
+//     console.error('Error calling external API:', error);
+//     return res.status(500).json({ error: 'Internal Server Error' });
+//   }
 });
 
 // Start the server
