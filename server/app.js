@@ -64,16 +64,16 @@ app.post('/process-query', async (req, res) => {
 
   res.status(200).json(payload)
 
-//   try {
-//     // Send the formatted data to the external API
-//     const response = await axios.post('http://98.83.145.159:6000/predict_expanded', payload);
+  try {
+    // Send the formatted data to the external API
+    const response = await axios.post('http://98.83.145.159:6000/predict_expanded', payload);
 
-//     // Return the response data from the external API back to the client
-//     return res.status(200).json(response.data);
-//   } catch (error) {
-//     console.error('Error calling external API:', error);
-//     return res.status(500).json({ error: 'Internal Server Error' });
-//   }
+    // Return the response data from the external API back to the client
+    return res.status(200).json(response.data);
+  } catch (error) {
+    console.error('Error calling external API:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Start the server
