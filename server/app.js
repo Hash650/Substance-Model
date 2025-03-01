@@ -62,7 +62,7 @@ app.post('/process-query', async (req, res) => {
   };
 
 
-  res.status(200).json(payload)
+//   res.status(200).json(payload)
 
   try {
     // Send the formatted data to the external API
