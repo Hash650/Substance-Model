@@ -4,29 +4,34 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const cors = require('cors');
+const nlp = require('compromise');
 app.use(cors());
 // Middleware to parse JSON requests
 app.use(express.json());
 
-// Simple function to extract keywords from the query
+// Simple function to extract keywords from the query using NLP
 const extractKeywords = (query) => {
-  // You can expand this regex logic to match actual text patterns for age, gender, etc.
-  const agePattern = /(\d{1,3})\s?(?:years? old|yrs?)/i;
-  const genderPattern = /\b(male|female)\b/i;
-  const neighborhoodPattern = /\b([A-Za-z]+(?:\s[A-Za-z]+)*)\b/i; // simplistic neighborhood capture
-  const substancePattern = /\b(alcohol|drug|nicotine)\b/i;
+  const doc = nlp(query);
 
-  const age = query.match(agePattern)?.[1] || null;
-  const gender = query.match(genderPattern)?.[1] || null;
-  const neighborhood = query.match(neighborhoodPattern)?.[1] || null;
-  const substance = query.match(substancePattern)?.[1] || null;
+  // Extract age using compromise (age might be treated as numbers)
+  const age = doc.match('#Age').text() || null;
+
+  // Extract gender (look for words like male/female)
+  const gender = doc.match('#Gender').text() || null;
+
+  // Extract neighborhood (for simplicity, we'll capture neighborhood names as nouns)
+  const neighborhood = doc.match('#Place').text() || null;
+
+  // Extract substance
+  const substances = ['alcohol', 'drug', 'nicotine'];
+  const substance = substances.find(sub => doc.has(sub)) || null;
 
   return { age, gender, neighborhood, substance };
 };
 
-app.get("/", (req, res)=> {
-    res.json({message: "working"})
-})
+app.get("/", (req, res) => {
+  res.json({ message: "working" });
+});
 
 // Endpoint to process user query
 app.post('/process-query', async (req, res) => {
@@ -36,21 +41,16 @@ app.post('/process-query', async (req, res) => {
     return res.status(400).json({ error: 'Query is required' });
   }
 
-  // Extract keywords from the user query
+  // Extract keywords from the user query using NLP
   const { age, gender, neighborhood, substance } = extractKeywords(query);
 
+  return res.status(200).json({ age, gender, neighborhood, substance });
 
-
-  return res.status(200).json({age,gender,neighborhood,substance})
-
-  // Prepare data to send to another API (replace URL with your real endpoint)
+  // Example of how to send the data to another API (uncomment if needed)
 //   const apiPayload = { age, gender, neighborhood, substance };
 
 //   try {
-//     // Send the extracted data to another API (mocked here with axios)
 //     const response = await axios.post('https://mock-api-endpoint.com', apiPayload);
-
-//     // Return the response from the external API to the frontend
 //     return res.json({ responseData: response.data });
 //   } catch (error) {
 //     console.error('Error calling external API:', error);
