@@ -1,0 +1,32 @@
+# Node.js dependencies
+/node_modules/
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+
+# npm debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build directories
+/dist/
+/build/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# Optional: Ignore test output folders
+/coverage/
+
+# Optional: Ignore database files (e.g., SQLite, etc.)
+*.sqlite
